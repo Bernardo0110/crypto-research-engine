@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* ── Reset e variáveis ────────────────────────────────────────── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0D1117;
+            --bg2: #161B22;
+            --bg3: #21262D;
+            --borda: #30363D;
+            --texto: #E6EDF3;
+            --texto2: #8B949E;
+            --primaria: #F7931A;
+            --positivo: #238636;
+            --alerta: #9E6A03;
+            --negativo: #DA3633;
+            --azul: #1F6FEB;
+            --pagina-w: 210mm;
+            --pagina-h: 297mm;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-size: 9pt;
+            background: var(--bg);
+            color: var(--texto);
+            -webkit-print-color-adjust: exact;
+        }
+
+        /* ── Página ───────────────────────────────────────────────────── */
+        .pagina {
+            width: var(--pagina-w);
+            min-height: var(--pagina-h);
+            page-break-after: always;
+            padding: 12mm 14mm;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── Header padrão ───────────────────────────────────────────── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--borda);
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+        }
+
+        .header-titulo {
+            font-size: 7pt;
+            color: var(--texto2);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .header-data {
+            font-size: 7pt;
+            color: var(--texto2);
+        }
+
+        /* ── Colunas ─────────────────────────────────────────────────── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        /* ── Cards ───────────────────────────────────────────────────── */
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--borda);
+            border-radius: 6px;
+            padding: 8px 10px;
+        }
+
+        .card-titulo {
+            font-size: 7pt;
+            color: var(--texto2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .card-valor {
+            font-size: 14pt;
+            font-weight: 700;
+            color: var(--texto);
+        }
+
+        .card-sub {
+            font-size: 7.5pt;
+            color: var(--texto2);
+            margin-top: 2px;
+        }
+
+        /* ── Score badge ─────────────────────────────────────────────── */
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 9pt;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* ── Seção ───────────────────────────────────────────────────── */
+        .secao-titulo {
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: var(--primaria);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 10px 0 6px;
+            border-left: 3px solid var(--primaria);
+            padding-left: 6px;
+        }
+
+        /* ── Tabela ──────────────────────────────────────────────────── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8pt;
+        }
+
+        th {
+            background: var(--bg3);
+            color: var(--texto2);
+            font-size: 7pt;
+            text-transform: uppercase;
+            padding: 5px 6px;
+            text-align: left;
+        }
+
+        td {
+            padding: 4px 6px;
+            border-bottom: 1px solid var(--borda);
+            color: var(--texto);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ── Barra de score ──────────────────────────────────────────── */
+        .barra-wrap {
+            margin: 3px 0;
+        }
+
+        .barra-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 7.5pt;
+            color: var(--texto2);
+            margin-bottom: 2px;
+        }
+
+        .barra-bg {
+            background: var(--bg3);
+            border-radius: 3px;
+            height: 6px;
+            width: 100%;
+        }
+
+        .barra-fill {
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        /* ── Texto de análise ────────────────────────────────────────── */
+        .texto-analise {
+            font-size: 8pt;
+            line-height: 1.5;
+            color: var(--texto);
+            background: var(--bg2);
+            border-radius: 4px;
+            padding: 8px 10px;
+            border-left: 2px solid var(--primaria);
+        }
+
+        /* ── Alerta ──────────────────────────────────────────────────── */
+        .alerta {
+            background: rgba(218, 54, 51, .08);
+            border: 1px solid var(--negativo);
+            border-radius: 4px;
+            padding: 5px 8px;
+            font-size: 7.5pt;
+            color: #F85149;
+            margin-top: 4px;
+        }
+
+        /* ── Gráfico embed ───────────────────────────────────────────── */
+        .grafico {
+            width: 100%;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+
+        /* ── Imagem inline ───────────────────────────────────────────── */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ── Notícia item ────────────────────────────────────────────── */
+        .noticia {
+            border-bottom: 1px solid var(--borda);
+            padding: 5px 0;
+        }
+
+        .noticia:last-child {
+            border-bottom: none;
+        }
+
+        .noticia-data {
+            font-size: 7pt;
+            color: var(--texto2);
+        }
+
+        .noticia-titulo {
+            font-size: 8pt;
+            color: var(--texto);
+            margin-top: 1px;
+        }
+
+        .noticia-fonte {
+            font-size: 7pt;
+            color: var(--texto2);
+            margin-top: 1px;
+        }
+
+        /* ── Footer ──────────────────────────────────────────────────── */
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid var(--borda);
+            padding-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 6.5pt;
+            color: var(--texto2);
+        }
+
+        /* ── Cores de variação ───────────────────────────────────────── */
+        .pos {
+            color: #3FB950;
+        }
+
+        .neg {
+            color: #F85149;
+        }
+
+        .neu {
+            color: var(--texto2);
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        @media print {
+            .pagina {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {# PÁGINA 1 — CAPA #}
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {% set sc = narrativa.score_integrado %}
+    {% set md = narrativa.mercado %}
+    {% set meta = narrativa.meta %}
+
+    <div class="pagina" style="justify-content: space-between;">
+
+        {# Fundo decorativo #}
+        <div style="position:absolute;top:0;right:0;width:160mm;height:160mm;
+              background:radial-gradient(circle at 80% 20%,rgba(247,147,26,.06) 0%,transparent 60%);
+              pointer-events:none;"></div>
+
+        {# Topo: logo + data #}
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+                <div style="font-size:7pt;letter-spacing:2px;color:var(--texto2);text-transform:uppercase;">
+                    Crypto Research Engine
+                </div>
+                <div style="font-size:6.5pt;color:var(--texto2);margin-top:2px;">
+                    Relatório gerado em {{ data_geracao }}
+                </div>
+            </div>
+            <div style="text-align:right;font-size:6.5pt;color:var(--texto2);">
+                Categoria: {{ meta.categoria }}<br>
+                Benchmark: {{ meta.benchmark | upper }}
+            </div>
+        </div>
+
+        {# Nome e símbolo #}
+        <div style="margin-top:28mm;">
+            <div style="font-size:32pt;font-weight:800;color:var(--texto);letter-spacing:-1px;">
+                {{ meta.nome }}
+            </div>
+            <div style="font-size:16pt;font-weight:600;color:var(--primaria);margin-top:2px;">
+                {{ meta.simbolo }}
+            </div>
+            <div style="font-size:9pt;color:var(--texto2);margin-top:6px;">
+                Análise quantitativa · fundamentalista · on-chain · macro
+            </div>
+        </div>
+
+        {# Score integrado + preço #}
+        <div style="margin-top:18mm;display:flex;gap:16px;align-items:flex-end;">
+
+            {# Score central #}
+            <div style="background:var(--bg2);border:1px solid var(--borda);border-radius:8px;
+                padding:14px 20px;min-width:100px;text-align:center;">
+                <div
+                    style="font-size:7pt;color:var(--texto2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">
+                    Score Integrado
+                </div>
+                <div style="font-size:36pt;font-weight:800;color:{{ sc.cor_final }};">
+                    {{ sc.score_final if sc.score_final != 'N/D' else 'N/D' }}
+                </div>
+                <div style="font-size:7pt;color:var(--texto2);margin-top:2px;">/ 10</div>
+                <div class="score-badge" style="background:{{ sc.cor_final }}22;color:{{ sc.cor_final }};
+                                      border:1px solid {{ sc.cor_final }}44;margin:8px auto 0;justify-content:center;">
+                    {{ sc.label_final }}
+                </div>
+            </div>
+
+            {# Métricas de mercado #}
+            <div style="flex:1;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                    <div class="card">
+                        <div class="card-titulo">Preço Atual</div>
+                        <div class="card-valor" style="font-size:13pt;">{{ md.preco_fmt }}</div>
+                        <div class="card-sub"
+                            style="color:{% if narrativa.mercado.var_24h_fmt.startswith('+') %}var(--positivo){% elif narrativa.mercado.var_24h_fmt.startswith('-') %}var(--negativo){% else %}var(--texto2){% endif %}">
+                            {{ md.var_24h_fmt }} (24h)
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-titulo">Market Cap</div>
+                        <div class="card-valor" style="font-size:11pt;">{{ md.mcap_fmt }}</div>
+                        <div class="card-sub">Rank {{ md.rank_fmt }}</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-titulo">Volume 24h</div>
+                        <div class="card-valor" style="font-size:11pt;">{{ md.volume_fmt }}</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-titulo">FDV</div>
+                        <div class="card-valor" style="font-size:11pt;">{{ md.fdv_fmt }}</div>
+                        <div class="card-sub">{{ narrativa.fundamental.fdv_mcap_fmt }} do MCap</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Componentes do score #}
+        <div style="margin-top:16px;">
+            <div class="card-titulo" style="margin-bottom:8px;">Composição do Score</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+                {% set comp_labels =
+                {"quant":"Quantitativo","fundamental":"Fundamentalista","macro":"Macro","ia":"Análise IA"} %}
+                {% for chave, label in comp_labels.items() %}
+                {% set val = sc.componentes.get(chave) %}
+                <div
+                    style="background:var(--bg2);border:1px solid var(--borda);border-radius:5px;padding:6px 8px;text-align:center;">
+                    <div style="font-size:6.5pt;color:var(--texto2);margin-bottom:3px;">{{ label }}</div>
+                    {% if val is not none %}
+                    <div style="font-size:14pt;font-weight:700;color:var(--texto);">{{ "%.1f"|format(val) }}</div>
+                    {% else %}
+                    <div style="font-size:10pt;color:var(--texto2);">N/D</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# Variações #}
+        <div style="margin-top:12px;display:flex;gap:8px;">
+            {% for label, val in [("7 dias", md.var_7d_fmt), ("30 dias", md.var_30d_fmt)] %}
+            <div class="card" style="flex:1;text-align:center;">
+                <div class="card-titulo">{{ label }}</div>
+                <div
+                    style="font-size:13pt;font-weight:700;margin-top:2px;
+                  color:{% if val.startswith('+') %}#3FB950{% elif val.startswith('-') %}#F85149{% else %}var(--texto2){% endif %}">
+                    {{ val }}
+                </div>
+            </div>
+            {% endfor %}
+            <div class="card" style="flex:1;text-align:center;">
+                <div class="card-titulo">ATH</div>
+                <div style="font-size:11pt;font-weight:700;margin-top:2px;">{{ md.ath_fmt }}</div>
+            </div>
+            <div class="card" style="flex:1;text-align:center;">
+                <div class="card-titulo">Contexto Macro</div>
+                <div style="font-size:11pt;font-weight:700;margin-top:2px;color:{{ sc.cor_final }};">
+                    {{ narrativa.macro.fg_fmt.split('—')[0].strip() }}
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>Crypto Research Engine · {{ meta.nome }} ({{ meta.simbolo }})</span>
+            <span>Página 1 de {{ 7 + (1 if narrativa.noticias else 0) }}</span>
+        </div>
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {# PÁGINA 2 — SUMÁRIO EXECUTIVO #}
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    <div class="pagina">
+        <div class="header">
+            <span class="header-titulo">{{ meta.nome }} ({{ meta.simbolo }}) · Sumário Executivo</span>
+            <span class="header-data">{{ data_geracao }}</span>
+        </div>
+
+        {# Veredicto IA #}
+        {% if narrativa.ia_texto %}
+        <div class="secao-titulo">Veredicto da Análise IA</div>
+        <div class="texto-analise" style="font-size:7.5pt;max-height:72mm;overflow:hidden;">
+            <p>{{ narrativa.ia_texto | replace('\n\n', '</p><p style="margin-top:6px">') | safe }}</p>
+        </div>
+        {% endif %}
+
+        {# Scores resumidos #}
+        <div class="secao-titulo">Scores por Dimensão</div>
+        {% set dim_info = [
+        ("Quantitativo", narrativa.quant.score_quant, narrativa.quant.label_quant),
+        ("Fundamentalista", narrativa.fundamental.score_fundamental, narrativa.fundamental.label_fundamental),
+        ("Macro Crypto", narrativa.macro.score_macro, narrativa.macro.label_macro),
+        ] %}
+        {% for dim_label, dim_score, dim_class in dim_info %}
+        <div class="barra-wrap">
+            <div class="barra-label">
+                <span>{{ dim_label }}</span>
+                <span style="font-weight:700;">{{ dim_score }} / 10 &nbsp;·&nbsp; <span style="color:var(--primaria)">{{
+                        dim_class }}</span></span>
+            </div>
+            <div class="barra-bg">
+                <div class="barra-fill"
+                    style="width:{{ (dim_score|float * 10) if dim_score != 'N/D' else 0 }}%;
+                  background:{% if dim_score != 'N/D' and dim_score|float >= 7 %}var(--positivo){% elif dim_score != 'N/D' and dim_score|float >= 5 %}var(--alerta){% else %}var(--negativo){% endif %};">
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {# Destaques quant #}
+        <div class="secao-titulo">Principais Métricas</div>
+        <div class="grid-3" style="gap:5px;">
+            {% set metricas_resumo = [
+            ("CAGR 2a", narrativa.quant.cagr_fmt),
+            ("Sharpe 1a", narrativa.quant.sharpe_fmt),
+            ("Max Drawdown", narrativa.quant.mdd_fmt),
+            ("Volatilidade", narrativa.quant.vol_fmt),
+            ("Beta vs BTC", narrativa.quant.beta_fmt),
+            ("Fear & Greed", narrativa.macro.fg_fmt.split('—')[0].strip()),
+            ] %}
+            {% for label, val in metricas_resumo %}
+            <div class="card" style="padding:6px 8px;">
+                <div class="card-titulo">{{ label }}</div>
+                <div style="font-size:11pt;font-weight:700;margin-top:2px;">{{ val }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {# Pontos-chave #}
+        <div class="secao-titulo">Pontos-Chave da Análise</div>
+        <div class="grid-2" style="gap:8px;">
+            <div class="card">
+                <div class="card-titulo" style="color:#3FB950;">✓ Pontos Positivos</div>
+                <ul style="font-size:7.5pt;padding-left:12px;margin-top:4px;line-height:1.6;">
+                    {% if narrativa.quant.score_quant != 'N/D' and narrativa.quant.score_quant|float >= 6 %}
+                    <li>Performance quantitativa acima da mediana do peer set</li>
+                    {% endif %}
+                    {% if narrativa.fundamental.score_fundamental != 'N/D' and
+                    narrativa.fundamental.score_fundamental|float >= 6 %}
+                    <li>Fundamentos sólidos em relação aos concorrentes</li>
+                    {% endif %}
+                    {% if narrativa.macro.label_macro in ['FORTE', 'NEUTRO'] %}
+                    <li>Contexto macro {{ narrativa.macro.label_macro | lower }} para o ativo</li>
+                    {% endif %}
+                    {% if narrativa.fundamental.fdv_mcap_fmt != 'N/D' and narrativa.fundamental.fdv_mcap_fmt |
+                    replace('x','') | float <= 1.5 %} <li>Pressão de diluição baixa (FDV/MCap {{
+                        narrativa.fundamental.fdv_mcap_fmt }})</li>
+                        {% endif %}
+                        <li>Halving cycle: {{ narrativa.macro.fase_ciclo }}</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-titulo" style="color:#F85149;">✗ Pontos de Atenção</div>
+                <ul style="font-size:7.5pt;padding-left:12px;margin-top:4px;line-height:1.6;">
+                    {% if narrativa.quant.score_quant != 'N/D' and narrativa.quant.score_quant|float < 5 %} <li>
+                        Performance quantitativa abaixo da mediana</li>
+                        {% endif %}
+                        {% if narrativa.quant.mdd_fmt != 'N/D' and narrativa.quant.mdd_fmt | replace('%','') |
+                        replace('-','') | float > 60 %}
+                        <li>Drawdown histórico elevado ({{ narrativa.quant.mdd_fmt }})</li>
+                        {% endif %}
+                        {% if narrativa.fundamental.fdv_mcap_fmt != 'N/D' and narrativa.fundamental.fdv_mcap_fmt |
+                        replace('x','') | float > 3 %}
+                        <li>Pressão de diluição futura elevada</li>
+                        {% endif %}
+                        {% if narrativa.macro.label_macro == 'FRACO' or narrativa.macro.label_macro == 'VENDA' %}
+                        <li>Contexto macro desfavorável ao ativo</li>
+                        {% endif %}
+                        {% if narrativa.avisos %}
+                        {% for aviso in narrativa.avisos[:2] %}
+                        <li>{{ aviso }}</li>
+                        {% endfor %}
+                        {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        {# Avisos de cobertura #}
+        {% if narrativa.score_integrado.componentes_ausentes %}
+        <div class="alerta" style="margin-top:8px;">
+            ⚠ Componentes sem dados suficientes (excluídos do score):
+            {{ narrativa.score_integrado.componentes_ausentes | join(", ") }}
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <span>Crypto Research Engine · {{ meta.nome }}</span>
+            <span>Página 2</span>
+        </div>
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {# PÁGINA 3 — ANÁLISE QUANTITATIVA #}
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    <div class="pagina">
+        <div class="header">
+            <span class="header-titulo">{{ meta.nome }} · Análise Quantitativa</span>
+            <span class="header-data">Score Quant: {{ narrativa.quant.score_quant }} / 10 · {{
+                narrativa.quant.label_quant }}</span>
+        </div>
+
+        {# Gráfico de preço #}
+        {% if graficos.preco_historico %}
+        <img src="{{ graficos.preco_historico }}" class="grafico" style="max-height:52mm;">
+        {% endif %}
+
+        {# Retornos acumulados #}
+        {% if graficos.retornos_acumulados %}
+        <img src="{{ graficos.retornos_acumulados }}" class="grafico" style="max-height:40mm;margin-top:6px;">
+        {% endif %}
+
+        {# Tabela de métricas #}
+        <div class="secao-titulo">Métricas de Risco/Retorno</div>
+        <table>
+            <tr>
+                <th>Métrica</th>
+                <th>Valor</th>
+                <th>Referência</th>
+                <th>Interpretação</th>
+            </tr>
+            <tr>
+                <td>CAGR 2 Anos</td>
+                <td>{{ narrativa.quant.cagr_fmt }}</td>
+                <td>Retorno anualizado</td>
+                <td>{{ "Acima da média" if narrativa.quant.score_cagr is defined else "—" }}</td>
+            </tr>
+            <tr>
+                <td>Sharpe Ratio (1a)</td>
+                <td>{{ narrativa.quant.sharpe_fmt }}</td>
+                <td>&gt; 1.0 = bom</td>
+                <td>{{ narrativa.quant.texto_sharpe[:60] }}</td>
+            </tr>
+            <tr>
+                <td>Sortino Ratio (1a)</td>
+                <td>{{ narrativa.quant.sortino_fmt }}</td>
+                <td>&gt; 1.0 = bom</td>
+                <td>Penaliza apenas volatilidade negativa</td>
+            </tr>
+            <tr>
+                <td>Max Drawdown</td>
+                <td>{{ narrativa.quant.mdd_fmt }}</td>
+                <td>Queda pico→vale</td>
+                <td>Maior perda histórica no período</td>
+            </tr>
+            <tr>
+                <td>Volatilidade (1a)</td>
+                <td>{{ narrativa.quant.vol_fmt }}</td>
+                <td>Anualizada</td>
+                <td>Risco total do ativo</td>
+            </tr>
+            <tr>
+                <td>Beta vs {{ meta.benchmark | upper }}</td>
+                <td>{{ narrativa.quant.beta_fmt }}</td>
+                <td>1.0 = igual ao BTC</td>
+                <td>{{ narrativa.quant.texto_beta[:60] }}</td>
+            </tr>
+            <tr>
+                <td>Alpha (1a)</td>
+                <td>{{ narrativa.quant.alpha_fmt }}</td>
+                <td>&gt; 0 = supera BTC</td>
+                <td>Retorno acima do esperado pelo beta</td>
+            </tr>
+            <tr>
+                <td>Correlação BTC</td>
+                <td>{{ narrativa.quant.corr_fmt }}</td>
+                <td>0 a 1</td>
+                <td>Quanto segue o BTC</td>
+            </tr>
+            <tr>
+                <td>VaR 95%</td>
+                <td>{{ narrativa.quant.var_fmt if narrativa.quant.var_fmt is defined else "N/D" }}</td>
+                <td>Perda máxima diária</td>
+                <td>Em 95% dos dias a perda é menor</td>
+            </tr>
+        </table>
+
+        {# Drawdown + distribuição #}
+        <div class="grid-2" style="margin-top:8px;gap:6px;">
+            {% if graficos.drawdown %}
+            <img src="{{ graficos.drawdown }}" style="max-height:35mm;border-radius:4px;">
+            {% endif %}
+            {% if graficos.distribuicao %}
+            <img src="{{ graficos.distribuicao }}" style="max-height:35mm;border-radius:4px;">
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            <span>Crypto Research Engine · {{ meta.nome }}</span>
+            <span>Página 3</span>
+        </div>
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {# PÁGINA 4 — ANÁLISE FUNDAMENTALISTA #}
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    <div class="pagina">
+        <div class="header">
+            <span class="header-titulo">{{ meta.nome }} · Análise Fundamentalista</span>
+            <span class="header-data">Score Fund.: {{ narrativa.fundamental.score_fundamental }} / 10 · {{
+                narrativa.fundamental.label_fundamental }}</span>
+        </div>
+
+        {# Gráfico de scores por pilar #}
+        {% if graficos.scores_pilares %}
+        <img src="{{ graficos.scores_pilares }}" class="grafico" style="max-height:50mm;">
+        {% endif %}
+
+        <div class="grid-2" style="margin-top:8px;gap:8px;">
+
+            {# Tokenomics #}
+            <div>
+                <div class="secao-titulo">Tokenomics & Supply</div>
+                <table>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Valor</th>
+                    </tr>
+                    <tr>
+                        <td>FDV / Market Cap</td>
+                        <td>{{ narrativa.fundamental.fdv_mcap_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Inflação de Supply</td>
+                        <td>{{ narrativa.fundamental.inflacao_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Commits (4 semanas)</td>
+                        <td>{{ narrativa.fundamental.commits_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>MCap</td>
+                        <td>{{ narrativa.mercado.mcap_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>FDV</td>
+                        <td>{{ narrativa.mercado.fdv_fmt }}</td>
+                    </tr>
+                </table>
+                <div class="texto-analise" style="margin-top:6px;font-size:7.5pt;">
+                    {{ narrativa.fundamental.texto_dilution }}
+                </div>
+            </div>
+
+            {# DeFi / Protocol Revenue #}
+            <div>
+                {% if narrativa.fundamental.tvl_fmt != 'N/D' %}
+                <div class="secao-titulo">Protocol Revenue (DeFi)</div>
+                <table>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Valor</th>
+                    </tr>
+                    <tr>
+                        <td>TVL Atual</td>
+                        <td>{{ narrativa.fundamental.tvl_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>MCap / TVL</td>
+                        <td>{{ narrativa.fundamental.mcap_tvl_fmt }}</td>
+                    </tr>
+                </table>
+                {% if narrativa.fundamental.texto_tvl %}
+                <div class="texto-analise" style="margin-top:6px;font-size:7.5pt;">
+                    {{ narrativa.fundamental.texto_tvl }}
+                </div>
+                {% endif %}
+                {% endif %}
+
+                {# Developer Activity #}
+                <div class="secao-titulo" style="margin-top:10px;">Developer Activity</div>
+                {% if narrativa.fundamental.texto_dev %}
+                <div class="texto-analise" style="font-size:7.5pt;">
+                    {{ narrativa.fundamental.texto_dev }}
+                </div>
+                {% else %}
+                <div style="font-size:7.5pt;color:var(--texto2);padding:6px;">Dados GitHub indisponíveis para este
+                    ativo.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Comparativo MCap vs peers #}
+        {% if graficos.mcap_peers %}
+        <div class="secao-titulo">Market Cap vs Peers</div>
+        <img src="{{ graficos.mcap_peers }}" class="grafico" style="max-height:45mm;">
+        {% endif %}
+
+        {# TVL peers se DeFi #}
+        {% if graficos.tvl_peers %}
+        <div class="secao-titulo">TVL vs Peers DeFi</div>
+        <img src="{{ graficos.tvl_peers }}" class="grafico" style="max-height:40mm;">
+        {% endif %}
+
+        <div class="footer">
+            <span>Crypto Research Engine · {{ meta.nome }}</span>
+            <span>Página 4</span>
+        </div>
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {# PÁGINA 5 — CONTEXTO MACRO + VEREDICTO FINAL #}
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    <div class="pagina">
+        <div class="header">
+            <span class="header-titulo">{{ meta.nome }} · Contexto Macro & Veredicto</span>
+            <span class="header-data">Score Macro: {{ narrativa.macro.score_macro }} / 10</span>
+        </div>
+
+        <div class="grid-2" style="gap:8px;">
+
+            {# Fear & Greed + Halving #}
+            <div>
+                {% if graficos.fear_greed %}
+                <div class="secao-titulo">Sentimento de Mercado</div>
+                <img src="{{ graficos.fear_greed }}" style="max-height:48mm;border-radius:4px;">
+                <div class="texto-analise" style="margin-top:5px;font-size:7.5pt;">
+                    {{ narrativa.macro.texto_fg }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {# Scores macro #}
+                {% if graficos.scores_macro %}
+                <div class="secao-titulo">Indicadores Macro</div>
+                <img src="{{ graficos.scores_macro }}" style="max-height:48mm;border-radius:4px;">
+                {% endif %}
+
+                {# Tabela macro resumida #}
+                <table style="margin-top:6px;">
+                    <tr>
+                        <th>Indicador</th>
+                        <th>Valor</th>
+                    </tr>
+                    <tr>
+                        <td>Fear & Greed</td>
+                        <td>{{ narrativa.macro.fg_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>BTC Dominance</td>
+                        <td>{{ narrativa.macro.btc_dom_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Funding Rate</td>
+                        <td>{{ narrativa.macro.funding_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Fase do Halving</td>
+                        <td>{{ narrativa.macro.fase_ciclo }}</td>
+                    </tr>
+                    <tr>
+                        <td>Ciclo Completo</td>
+                        <td>{{ narrativa.macro.pct_ciclo_fmt }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        {# Halving progress #}
+        {% if graficos.halving %}
+        <div class="secao-titulo">Ciclo de Halving Bitcoin</div>
+        <img src="{{ graficos.halving }}" style="max-height:22mm;border-radius:4px;">
+        {% if narrativa.macro.texto_halving %}
+        <div class="texto-analise" style="font-size:7.5pt;margin-top:5px;">
+            {{ narrativa.macro.texto_halving }}
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {# Score Integrado Final #}
+        <div class="secao-titulo">Veredicto Final</div>
+        <div style="background:var(--bg2);border:1px solid var(--borda);border-radius:8px;
+              padding:12px 16px;display:flex;align-items:center;gap:20px;">
+            <div style="text-align:center;min-width:80px;">
+                <div style="font-size:40pt;font-weight:800;color:{{ sc.cor_final }};">
+                    {{ sc.score_final }}
+                </div>
+                <div style="font-size:7pt;color:var(--texto2);">/ 10</div>
+                <div class="score-badge" style="background:{{ sc.cor_final }}22;color:{{ sc.cor_final }};
+                                      border:1px solid {{ sc.cor_final }}44;margin-top:4px;">
+                    {{ sc.label_final }}
+                </div>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:8pt;font-weight:600;margin-bottom:6px;">Composição do Score Integrado</div>
+                {% for chave, val in sc.componentes.items() %}
+                <div class="barra-wrap">
+                    <div class="barra-label">
+                        <span>{{ {"quant":"Quantitativo","fundamental":"Fundamentalista","macro":"Macro Crypto","ia":"Análise IA"}.get(chave, chave) }}</span>
+                        <span>{{ "%.1f"|format(val) }}</span>
+                    </div>
+                    <div class="barra-bg">
+                        <div class="barra-fill"
+                            style="width:{{ val * 10 }}%;
+                      background:{% if val >= 7 %}var(--positivo){% elif val >= 5 %}var(--alerta){% else %}var(--negativo){% endif %};">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# Disclaimer #}
+        <div style="font-size:6pt;color:var(--texto2);line-height:1.4;margin-top:12px;">
+            <strong>Disclaimer:</strong> Este relatório é gerado automaticamente por um sistema de análise quantitativa
+            e não constitui recomendação de investimento.
+            Criptoativos são investimentos de alto risco. Dados podem estar desatualizados. Sempre consulte fontes
+            primárias antes de tomar qualquer decisão.
+            Crypto Research Engine não se responsabiliza por perdas decorrentes do uso deste relatório.
+        </div>
+
+        <div class="footer">
+            <span>Crypto Research Engine · {{ meta.nome }} ({{ meta.simbolo }})</span>
+            <span>Página 5</span>
+        </div>
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {# APÊNDICE A — DADOS QUANT COMPLETOS #}
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    <div class="pagina">
+        <div class="header">
+            <span class="header-titulo">Apêndice A · Métricas Quantitativas Completas</span>
+            <span class="header-data">{{ meta.nome }} ({{ meta.simbolo }})</span>
+        </div>
+
+        <div class="grid-2" style="gap:10px;align-items:start;">
+            <div>
+                <div class="secao-titulo">Retornos por Período</div>
+                <table>
+                    <tr>
+                        <th>Período</th>
+                        <th>Retorno</th>
+                    </tr>
+                    <tr>
+                        <td>7 dias</td>
+                        <td>{{ narrativa.mercado.var_7d_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>30 dias</td>
+                        <td>{{ narrativa.mercado.var_30d_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>CAGR 2 Anos</td>
+                        <td>{{ narrativa.quant.cagr_fmt }}</td>
+                    </tr>
+                </table>
+
+                <div class="secao-titulo" style="margin-top:10px;">Risco</div>
+                <table>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Valor</th>
+                    </tr>
+                    <tr>
+                        <td>Volatilidade Anual</td>
+                        <td>{{ narrativa.quant.vol_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Max Drawdown</td>
+                        <td>{{ narrativa.quant.mdd_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>VaR 95% (diário)</td>
+                        <td>{{ narrativa.quant.var_fmt if narrativa.quant.var_fmt is defined else "N/D" }}</td>
+                    </tr>
+                </table>
+
+                <div class="secao-titulo" style="margin-top:10px;">Ajustados ao Risco</div>
+                <table>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Valor</th>
+                    </tr>
+                    <tr>
+                        <td>Sharpe Ratio (1a)</td>
+                        <td>{{ narrativa.quant.sharpe_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Sortino Ratio (1a)</td>
+                        <td>{{ narrativa.quant.sortino_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Calmar Ratio</td>
+                        <td>{{ narrativa.quant.calmar_fmt if narrativa.quant.calmar_fmt is defined else "N/D" }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <div class="secao-titulo">Relação com Benchmark ({{ meta.benchmark | upper }})</div>
+                <table>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Valor</th>
+                    </tr>
+                    <tr>
+                        <td>Beta (1a)</td>
+                        <td>{{ narrativa.quant.beta_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Alpha (1a)</td>
+                        <td>{{ narrativa.quant.alpha_fmt }}</td>
+                    </tr>
+                    <tr>
+                        <td>Correlação</td>
+                        <td>{{ narrativa.quant.corr_fmt }}</td>
+                    </tr>
+                </table>
+
+                <div class="secao-titulo" style="margin-top:10px;">Scores Individuais</div>
+                {% set scores_ind = [
+                ("Sharpe", narrativa.quant.score_sharpe if narrativa.quant.score_sharpe is defined else "N/D"),
+                ("Sortino", narrativa.quant.score_sortino if narrativa.quant.score_sortino is defined else "N/D"),
+                ("Drawdown", narrativa.quant.score_drawdown if narrativa.quant.score_drawdown is defined else "N/D"),
+                ("CAGR", narrativa.quant.score_cagr if narrativa.quant.score_cagr is defined else "N/D"),
+                ("Volatilidade",narrativa.quant.score_volatilidade if narrativa.quant.score_volatilidade is defined else
+                "N/D"),
+                ("Calmar", narrativa.quant.score_calmar if narrativa.quant.score_calmar is defined else "N/D"),
+                ] %}
+                <table>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Score</th>
+                        <th>Peso</th>
+                    </tr>
+                    {% for label, val in scores_ind %}
+                    <tr>
+                        <td>{{ label }}</td>
+                        <td>{{ "%.1f"|format(val) if val != "N/D" else "N/D" }}</td>
+                        <td style="color:var(--texto2);">—</td>
+                    </tr>
+                    {% endfor %}
+                    <tr style="font-weight:700;border-top:1px solid var(--borda);">
+                        <td>Score Quant</td>
+                        <td style="color:var(--primaria);">{{ narrativa.quant.score_quant }}</td>
+                        <td>30%</td>
+                    </tr>
+                </table>
+
+                {% if graficos.radar_quant %}
+                <img src="{{ graficos.radar_quant }}" style="max-height:55mm;margin-top:8px;border-radius:4px;">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>Crypto Research Engine · {{ meta.nome }}</span>
+            <span>Apêndice A</span>
+        </div>
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {# APÊNDICE B — COMPARATIVO DE PEERS #}
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    <div class="pagina">
+        <div class="header">
+            <span class="header-titulo">Apêndice B · Comparativo de Peers — {{ meta.categoria }}</span>
+            <span class="header-data">{{ meta.nome }}</span>
+        </div>
+
+        {% if peers_tabela %}
+        <table>
+            <tr>
+                <th>Ativo</th>
+                <th>MCap</th>
+                <th>Volume 24h</th>
+                <th>FDV/MCap</th>
+                <th>Rank</th>
+            </tr>
+            {% for peer in peers_tabela %}
+            <tr
+                style="{% if peer.coin_id == meta.coin_id %}background:rgba(247,147,26,.08);font-weight:600;{% endif %}">
+                <td>{{ peer.simbolo }} {% if peer.coin_id == meta.coin_id %}★{% endif %}</td>
+                <td>{{ peer.mcap }}</td>
+                <td>{{ peer.volume }}</td>
+                <td>{{ peer.fdv_mcap }}</td>
+                <td>{{ peer.rank }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div style="color:var(--texto2);font-size:8pt;padding:10px;">Dados de peers não disponíveis.</div>
+        {% endif %}
+
+        <div class="secao-titulo" style="margin-top:12px;">Fundamentos dos Peers</div>
+        {% if peers_tabela %}
+        <table>
+            <tr>
+                <th>Ativo</th>
+                <th>TVL</th>
+                <th>Fees 30d</th>
+                <th>Revenue 30d</th>
+                <th>MCap/TVL</th>
+            </tr>
+            {% for peer in peers_tabela %}
+            <tr
+                style="{% if peer.coin_id == meta.coin_id %}background:rgba(247,147,26,.08);font-weight:600;{% endif %}">
+                <td>{{ peer.simbolo }}</td>
+                <td>N/D</td>
+                <td>N/D</td>
+                <td>N/D</td>
+                <td>N/D</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+        <div class="footer">
+            <span>Crypto Research Engine · {{ meta.nome }}</span>
+            <span>Apêndice B</span>
+        </div>
+    </div>
+
+
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {# APÊNDICE C — NOTÍCIAS RECENTES #}
+    {# ══════════════════════════════════════════════════════════════════════ #}
+    {% if narrativa.noticias %}
+    <div class="pagina">
+        <div class="header">
+            <span class="header-titulo">Apêndice C · Notícias Recentes — {{ meta.nome }}</span>
+            <span class="header-data">{{ data_geracao }}</span>
+        </div>
+
+        {% for noticia in narrativa.noticias %}
+        <div class="noticia">
+            <div class="noticia-data">
+                {{ noticia.data.strftime('%d/%m/%Y') if noticia.data else 'Data desconhecida' }} · {{ noticia.fonte }}
+            </div>
+            <div class="noticia-titulo">{{ noticia.titulo }}</div>
+            {% if noticia.resumo %}
+            <div style="font-size:7pt;color:var(--texto2);margin-top:2px;line-height:1.4;">
+                {{ noticia.resumo[:200] }}{% if noticia.resumo|length > 200 %}...{% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="footer">
+            <span>Crypto Research Engine · {{ meta.nome }}</span>
+            <span>Apêndice C</span>
+        </div>
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
