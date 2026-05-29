@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from data.field_mapper import fdv_mcap_ratio, taxa_inflacao_supply
 
 
@@ -17,6 +18,8 @@ def calcular_tokenomics(coin_id: str, df_peers) -> dict:
     supply_maximo  = row.get("supply_maximo", np.nan)
     supply_circ    = row.get("supply_circulante", np.nan)
     supply_total   = row.get("supply_total", np.nan)
+
+    supply_maximo = supply_maximo if not pd.isna(supply_maximo) else np.nan
 
     # Supply cap: se supply_maximo existir, calcula % já emitida
     pct_emitido = np.nan

@@ -162,8 +162,8 @@ def calcular_posicao_halving() -> dict:
     Calcula a posição atual no ciclo de halving do Bitcoin.
     Zero custo — sem chamadas externas.
     """
-    from datetime import date
-    hoje = date.today()
+    from datetime import datetime
+    hoje = datetime.today()
     halvings_passados = [h for h in HALVINGS if h <= hoje]
     if not halvings_passados:
         return {}
@@ -178,17 +178,16 @@ def calcular_posicao_halving() -> dict:
     dias_ciclo = (proximo_halving - ultimo_halving).days if proximo_halving else 1458  # ~4 anos
     pct_ciclo = dias_desde_halving / dias_ciclo
 
-    # Fase baseada em percentual do ciclo
-    fase = "desconhecida"
-    for (inicio, fim), nome in FASES_HALVING.items():
-        if inicio <= pct_ciclo < fim:
-            fase = nome
-            break
+    # Fase baseada em percentual do ciclo (FASES_HALVING é lista ordenada por pct_min crescente)
+    fase = FASES_HALVING[0][1]
+    for pct_min, label, _cor, _desc in FASES_HALVING:
+        if pct_ciclo >= pct_min:
+            fase = label
 
     return {
         "halving_numero":         idx + 1,
-        "ultimo_halving":         str(ultimo_halving),
-        "proximo_halving":        str(proximo_halving) if proximo_halving else "N/D",
+        "ultimo_halving":         ultimo_halving.strftime("%Y-%m-%d"),
+        "proximo_halving":        proximo_halving.strftime("%Y-%m-%d") if proximo_halving else "N/D",
         "dias_desde_halving":     dias_desde_halving,
         "pct_ciclo_completo":     round(pct_ciclo * 100, 1),
         "fase_ciclo":             fase,

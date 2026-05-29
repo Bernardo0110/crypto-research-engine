@@ -25,6 +25,7 @@ PERIODOS = {
 # Crypto é precificado em USD → usar Fed Funds Rate
 # Fallback caso API do Fed esteja indisponível
 RF_FALLBACK = 0.045   # 4.5% a.a.
+TAXA_LIVRE_RISCO = RF_FALLBACK
 
 # ── Paleta de cores ──────────────────────────────────────────
 COR_DESTAQUE = "#1A5276"
@@ -32,6 +33,17 @@ COR_PEERS    = "#AAB7B8"
 COR_BM       = "#E74C3C"
 COR_FUNDO    = "#F8F9FA"
 COR_GRID     = "#DEE2E6"
+
+CORES: dict[str, str] = {
+    "fundo":     "#0D1117",
+    "texto":     "#E6EDF3",
+    "grade":     "#21262D",
+    "primaria":  "#F7931A",
+    "secundaria":"#58A6FF",
+    "positivo":  "#3FB950",
+    "negativo":  "#F85149",
+    "alerta":    "#D29922",
+}
 
 # ── Tiers de market cap (USD) ────────────────────────────────
 TIER_LARGE = 10_000_000_000   # > USD 10B → Large Cap

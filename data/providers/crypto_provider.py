@@ -71,6 +71,8 @@ def coletar_dados(coin_id: str = ATIVO, benchmark_id: str = BENCHMARK) -> dict:
     # ── Notícias ──────────────────────────────────────────────────────────────
     print("  → News: Google News RSS...")
     noticias_raw = buscar_noticias_coin(coin_id, nome)
+    from data.providers.news_provider import _sleep_news
+    _sleep_news()
     noticias_macro = buscar_noticias_macro()
     noticias_filtradas = filtrar_relevantes(noticias_raw, coin_id, nome)
     noticias_texto = preparar_noticias_para_ia(noticias_filtradas)

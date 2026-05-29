@@ -1,4 +1,5 @@
 import asyncio
+import markdown as _md
 from pathlib import Path
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
@@ -36,6 +37,9 @@ def renderizar_html(narrativa: dict, graficos_quant: dict, graficos_fund: dict,
     env = Environment(
         loader=FileSystemLoader(str(TEMPLATES_DIR)),
         autoescape=True,
+    )
+    env.filters["markdown"] = lambda text: _md.markdown(
+        text or "", extensions=["nl2br"]
     )
 
     graficos_b64 = _preparar_graficos(graficos_quant, graficos_fund, graficos_macro)

@@ -155,6 +155,8 @@
             padding: 4px 6px;
             border-bottom: 1px solid var(--borda);
             color: var(--texto);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         tr:last-child td {
@@ -195,6 +197,31 @@
             border-radius: 4px;
             padding: 8px 10px;
             border-left: 2px solid var(--primaria);
+        }
+
+        .texto-analise h1, .texto-analise h2, .texto-analise h3 {
+            font-size: 8pt;
+            font-weight: 700;
+            color: var(--primaria);
+            margin: 6px 0 3px;
+        }
+
+        .texto-analise p {
+            margin: 4px 0;
+        }
+
+        .texto-analise ul, .texto-analise ol {
+            padding-left: 14px;
+            margin: 3px 0;
+        }
+
+        .texto-analise li {
+            margin: 2px 0;
+        }
+
+        .texto-analise strong {
+            color: var(--texto);
+            font-weight: 700;
         }
 
         /* ── Alerta ──────────────────────────────────────────────────── */
@@ -444,8 +471,8 @@
         {# Veredicto IA #}
         {% if narrativa.ia_texto %}
         <div class="secao-titulo">Veredicto da Análise IA</div>
-        <div class="texto-analise" style="font-size:7.5pt;max-height:72mm;overflow:hidden;">
-            <p>{{ narrativa.ia_texto | replace('\n\n', '</p><p style="margin-top:6px">') | safe }}</p>
+        <div class="texto-analise" style="font-size:7.5pt;">
+            {{ narrativa.ia_texto | markdown | safe }}
         </div>
         {% endif %}
 
@@ -594,7 +621,7 @@
                 <td>Sharpe Ratio (1a)</td>
                 <td>{{ narrativa.quant.sharpe_fmt }}</td>
                 <td>&gt; 1.0 = bom</td>
-                <td>{{ narrativa.quant.texto_sharpe[:60] }}</td>
+                <td>{{ narrativa.quant.texto_sharpe }}</td>
             </tr>
             <tr>
                 <td>Sortino Ratio (1a)</td>
@@ -618,7 +645,7 @@
                 <td>Beta vs {{ meta.benchmark | upper }}</td>
                 <td>{{ narrativa.quant.beta_fmt }}</td>
                 <td>1.0 = igual ao BTC</td>
-                <td>{{ narrativa.quant.texto_beta[:60] }}</td>
+                <td>{{ narrativa.quant.texto_beta }}</td>
             </tr>
             <tr>
                 <td>Alpha (1a)</td>

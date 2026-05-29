@@ -5,12 +5,13 @@ from datetime import datetime, timedelta
 from config.settings import COINGECKO_DEMO_KEY, TOKENOMIST_API_KEY
 from config.mappings import API_URLS, API_TIMEOUTS, CATEGORY_PEERS, CATEGORY_TO_KEY
 
+COINGECKO_BASE_URL = API_URLS["coingecko"]
 HEADERS_CG = {"x-cg-demo-api-key": COINGECKO_DEMO_KEY} if COINGECKO_DEMO_KEY else {}
 
 
 def buscar_dados_mercado(coin_id: str) -> dict:
     """Retorna preço, mcap, volume, fdv, supply e metadados do coin."""
-    url = f"{API_URLS['coingecko']}/coins/{coin_id}"
+    url = f"{COINGECKO_BASE_URL}/coins/{coin_id}"
     params = {
         "localization": "false",
         "tickers": "false",
@@ -52,7 +53,7 @@ def buscar_dados_mercado(coin_id: str) -> dict:
 
 def buscar_historico_precos(coin_id: str, dias: int = 365) -> pd.Series:
     """Retorna série diária de preços de fechamento (USD) dos últimos `dias` dias."""
-    url = f"{API_URLS['coingecko']}/coins/{coin_id}/market_chart"
+    url = f"{COINGECKO_BASE_URL}/coins/{coin_id}/market_chart"
     params = {"vs_currency": "usd", "days": dias, "interval": "daily"}
     try:
         r = requests.get(url, headers=HEADERS_CG, params=params, timeout=API_TIMEOUTS["coingecko"])
@@ -66,6 +67,9 @@ def buscar_historico_precos(coin_id: str, dias: int = 365) -> pd.Series:
         return df.sort_index()
     except Exception as e:
         print(f"[coingecko] buscar_historico_precos({coin_id}, {dias}d): {e}")
+        if dias > 365:
+            print(f"[coingecko] Requisitando fallback para 365 dias.")
+            return buscar_historico_precos(coin_id, dias=365)
         return pd.Series(dtype=float)
 
 
@@ -94,7 +98,7 @@ def buscar_peers(coin_id: str, categoria: str | None = None) -> list[str]:
 
 def buscar_dados_mercado_batch(coin_ids: list[str]) -> dict[str, dict]:
     """Busca market data de múltiplos coins em uma única chamada (endpoint /coins/markets)."""
-    url = f"{API_URLS['coingecko']}/coins/markets"
+    url = f"{COINGECKO_BASE_URL}/coins/markets"
     params = {
         "vs_currency": "usd",
         "ids": ",".join(coin_ids),

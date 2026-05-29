@@ -3,6 +3,17 @@ from google import genai
 from google.genai import types
 from config.settings import GEMINI_API_KEY
 
+_MODELOS = [
+    "gemini-3.1-flash-lite",
+    "gemini-2.5-flash",
+    "gemma-4-26b-a4b-it",
+    "gemini-2.0-flash-lite",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+]
+
+MAX_PROMPT_CHARS = 24_000
+
 
 def _montar_prompt(nome: str, simbolo: str, categoria: str | None,
                    sinais_macro: dict, noticias_texto: str,
@@ -79,28 +90,28 @@ def gerar_analise_ia(nome: str, simbolo: str, categoria: str | None,
         noticias_texto, scores_macro, dados_mercado
     )
 
-    try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.3,      # mais determinístico para análise financeira
-                max_output_tokens=900,
-            ),
-        )
-        texto = response.text.strip()
+    prompt = prompt[:MAX_PROMPT_CHARS]
+    client = genai.Client(api_key=GEMINI_API_KEY)
+    score_macro_base = scores_macro.get("score_macro", np.nan)
 
-        # Score IA: derivado do score macro com ajuste qualitativo mínimo
-        # (não pedimos ao Gemini um número — evita alucinação numérica)
-        score_macro_base = scores_macro.get("score_macro", np.nan)
+    for modelo in _MODELOS:
+        try:
+            response = client.models.generate_content(
+                model=modelo,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.3,
+                    max_output_tokens=900,
+                ),
+            )
+            texto = response.text.strip()
+            return {
+                "analise_ia_texto": texto,
+                "score_ia":         round(score_macro_base, 2) if not np.isnan(score_macro_base) else np.nan,
+                "modelo_ia":        modelo,
+            }
+        except Exception as e:
+            print(f"[gemini] {modelo}: {e}")
 
-        return {
-            "analise_ia_texto":  texto,
-            "score_ia":          round(score_macro_base, 2) if not np.isnan(score_macro_base) else np.nan,
-            "modelo_ia":         "gemini-2.0-flash",
-        }
-
-    except Exception as e:
-        print(f"[gemini] Erro na geração: {e}")
-        return {}
+    print("[gemini] Todos os modelos falharam — análise IA ignorada.")
+    return {}

@@ -41,11 +41,13 @@ def _etherscan_get(action: str, params_extra: dict = {}) -> dict:
     """Helper para chamadas Etherscan V2."""
     if not ETHERSCAN_API_KEY:
         return {}
+    if action not in ETHERSCAN_ENDPOINTS:
+        return {}
     url = API_URLS["etherscan"]
     params = {
         "chainid": 1,
-        "module":  ETHERSCAN_ENDPOINTS[action]["module"],
-        "action":  ETHERSCAN_ENDPOINTS[action]["action"],
+        "module":  ETHERSCAN_ENDPOINTS[action][0],
+        "action":  ETHERSCAN_ENDPOINTS[action][1],
         "apikey":  ETHERSCAN_API_KEY,
         **params_extra,
     }

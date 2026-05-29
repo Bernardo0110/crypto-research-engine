@@ -89,11 +89,13 @@ API_URLS: dict[str, str] = {
     "blockchain_info":"https://api.blockchain.info/charts",
     "etherscan":      "https://api.etherscan.io/v2/api",
     "github":         "https://api.github.com",
+    "okx":            "https://www.okx.com/api/v5",
     "okx_public":     "https://www.okx.com/api/v5/public",
     "okx_rubik":      "https://www.okx.com/api/v5/rubik/stat",
     "fear_greed":     "https://api.alternative.me/fng/",
     "pytrends":       "https://trends.google.com",
     "tokenomist":     "https://api.tokenomist.ai",
+    "google_news":    "https://news.google.com/rss/search",
 }
 
 # Timeout padrão por provider (segundos)
@@ -320,13 +322,106 @@ NEWS_KEYWORDS: dict[str, dict] = {
 # VI. SCORING
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Limiares para scoring quantitativo absoluto
+LIMIARES_QUANT: dict[str, dict[str, float]] = {
+    "sharpe": {
+        "fraco": 0.0,
+        "neutro": 0.5,
+        "bom": 1.0,
+        "otimo": 1.5,
+    },
+    "sortino": {
+        "fraco": 0.0,
+        "neutro": 0.75,
+        "bom": 1.25,
+        "otimo": 1.75,
+    },
+    "max_drawdown_invertido": {
+        "fraco": 0.0,
+        "neutro": 0.1,
+        "bom": 0.25,
+        "otimo": 0.50,
+    },
+    "cagr": {
+        "fraco": 0.0,
+        "neutro": 0.05,
+        "bom": 0.15,
+        "otimo": 0.30,
+    },
+    "volatilidade_invertida": {
+        "fraco": -1.0,
+        "neutro": -0.7,
+        "bom": -0.5,
+        "otimo": -0.3,
+    },
+    "calmar": {
+        "fraco": 0.0,
+        "neutro": 0.1,
+        "bom": 0.25,
+        "otimo": 0.50,
+    },
+    "var_invertido": {
+        "fraco": 0.0,
+        "neutro": 0.05,
+        "bom": 0.15,
+        "otimo": 0.30,
+    },
+}
+
+LIMIARES_FUNDAMENTAL: dict[str, dict[str, float]] = {
+    "trends": {
+        "fraco": 10.0,
+        "neutro": 20.0,
+        "bom": 40.0,
+        "otimo": 70.0,
+    },
+    "btc_hash_rate": {
+        "fraco": 100e18,
+        "neutro": 200e18,
+        "bom": 400e18,
+        "otimo": 600e18,
+    },
+    "nvt": {
+        "fraco": 100.0,
+        "neutro": 60.0,
+        "bom": 30.0,
+        "otimo": 0.0,
+    },
+    "eth_staking_pct": {
+        "fraco": 0.10,
+        "neutro": 0.16,
+        "bom": 0.22,
+        "otimo": 0.28,
+    },
+    "fee_margin": {
+        "fraco": 0.05,
+        "neutro": 0.15,
+        "bom": 0.30,
+        "otimo": 0.50,
+    },
+    "mcap_volume": {
+        "fraco": 60.0,
+        "neutro": 30.0,
+        "bom": 15.0,
+        "otimo": 5.0,
+    },
+    "dev_aceleracao": {
+        "fraco": 0.6,
+        "neutro": 0.9,
+        "bom": 1.1,
+        "otimo": 1.5,
+    },
+}
+
 # Score Quantitativo
 PESOS_QUANT: dict[str, float] = {
-    "Retorno":      0.25,
-    "Risco":        0.20,
-    "Eficiência":   0.30,
-    "Captura":      0.15,
-    "Consistência": 0.10,
+    "score_sharpe":      0.15,
+    "score_sortino":     0.15,
+    "score_drawdown":    0.15,
+    "score_cagr":        0.20,
+    "score_volatilidade":0.15,
+    "score_calmar":      0.10,
+    "score_var":         0.10,
 }
 
 # Score Fundamentalista (pilares)
