@@ -1,0 +1,15 @@
+{
+  "env": {
+    "PYTHONIOENCODING": "utf-8"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(python main.py *)",
+      "Bash(python tools/*)",
+      "Bash(git *)",
+      "Read(outputs/*)",
+      "Write(outputs/*)"
+    ]
+  }
+}

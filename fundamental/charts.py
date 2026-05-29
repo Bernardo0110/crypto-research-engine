@@ -1,19 +1,18 @@
+import io
+import base64
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-from pathlib import Path
 from config.settings import CORES
 
-PASTA_SAIDA = Path("outputs/charts")
-PASTA_SAIDA.mkdir(parents=True, exist_ok=True)
 
-
-def _salvar(fig: plt.Figure, nome: str) -> Path:
-    caminho = PASTA_SAIDA / nome
-    fig.savefig(caminho, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
+def _salvar(fig: plt.Figure) -> str:
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
-    return caminho
+    buf.seek(0)
+    return "data:image/png;base64," + base64.b64encode(buf.read()).decode()
 
 
 def _estilo_base(fig: plt.Figure, ax: plt.Axes) -> None:
@@ -30,7 +29,7 @@ def _estilo_base(fig: plt.Figure, ax: plt.Axes) -> None:
     ax.grid(True, color=grade, linewidth=0.5, alpha=0.7)
 
 
-def grafico_mcap_peers(df_peers: pd.DataFrame, coin_id: str, nome: str) -> Path:
+def grafico_mcap_peers(df_peers: pd.DataFrame, coin_id: str, nome: str) -> str | None:
     """Barras horizontais de MCap dos peers (USD)."""
     df = df_peers["mcap_usd"].dropna().sort_values(ascending=True)
     if df.empty:
@@ -49,15 +48,15 @@ def grafico_mcap_peers(df_peers: pd.DataFrame, coin_id: str, nome: str) -> Path:
         for idx in df.index
     ]
 
-    bars = ax.barh(labels, df.values / 1e9, color=cores, edgecolor="none", height=0.6)
+    ax.barh(labels, df.values / 1e9, color=cores, edgecolor="none", height=0.6)
     ax.set_xlabel("Market Cap (USD Bilhões)")
     ax.set_title(f"{nome} — Market Cap vs Peers", fontsize=11, pad=10)
     ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"${x:.0f}B"))
 
-    return _salvar(fig, f"{coin_id}_mcap_peers.png")
+    return _salvar(fig)
 
 
-def grafico_scores_pilares(scores_fundamental: dict, nome: str, coin_id: str) -> Path:
+def grafico_scores_pilares(scores_fundamental: dict, nome: str, coin_id: str) -> str | None:
     """Barras dos scores por pilar fundamentalista."""
     mapa = {
         "score_tokenomics":       "Tokenomics",
@@ -99,10 +98,10 @@ def grafico_scores_pilares(scores_fundamental: dict, nome: str, coin_id: str) ->
         ax.text(v + 0.2, i, f"{v:.1f}", va="center",
                 color=CORES.get("texto", "#E6EDF3"), fontsize=9)
 
-    return _salvar(fig, f"{coin_id}_scores_pilares.png")
+    return _salvar(fig)
 
 
-def grafico_tvl_peers(df_peers: pd.DataFrame, coin_id: str, nome: str) -> Path | None:
+def grafico_tvl_peers(df_peers: pd.DataFrame, coin_id: str, nome: str) -> str | None:
     """Barras de TVL dos peers DeFi. Retorna None se sem dados."""
     df = df_peers["tvl_usd"].dropna().sort_values(ascending=True)
     if df.empty or len(df) < 2:
@@ -126,11 +125,11 @@ def grafico_tvl_peers(df_peers: pd.DataFrame, coin_id: str, nome: str) -> Path |
     ax.set_title(f"{nome} — TVL vs Peers DeFi", fontsize=11, pad=10)
     ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"${x:.1f}B"))
 
-    return _salvar(fig, f"{coin_id}_tvl_peers.png")
+    return _salvar(fig)
 
 
 def gerar_todos(df_peers: pd.DataFrame, scores_fundamental: dict,
-                nome: str, coin_id: str) -> dict[str, Path]:
+                nome: str, coin_id: str) -> dict[str, str | None]:
     """Gera todos os gráficos fundamentalistas."""
     return {
         "mcap_peers":     grafico_mcap_peers(df_peers, coin_id, nome),

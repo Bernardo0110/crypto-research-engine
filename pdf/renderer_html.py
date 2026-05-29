@@ -10,25 +10,10 @@ OUTPUTS_DIR   = Path("outputs/pdfs")
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _carregar_imagem_base64(caminho: Path | None) -> str:
-    """Converte imagem em base64 para embed no HTML."""
-    if not caminho or not Path(caminho).exists():
-        return ""
-    import base64
-    with open(caminho, "rb") as f:
-        dados = base64.b64encode(f.read()).decode()
-    ext = Path(caminho).suffix.lstrip(".")
-    return f"data:image/{ext};base64,{dados}"
-
-
 def _preparar_graficos(graficos_quant: dict, graficos_fund: dict,
                         graficos_macro: dict) -> dict:
-    """Converte todos os caminhos de gráficos para base64."""
-    resultado = {}
-    todos = {**graficos_quant, **graficos_fund, **graficos_macro}
-    for nome, caminho in todos.items():
-        resultado[nome] = _carregar_imagem_base64(caminho)
-    return resultado
+    """Mescla os dicts de gráficos (já em base64) em um único dict."""
+    return {**graficos_quant, **graficos_fund, **graficos_macro}
 
 
 def renderizar_html(narrativa: dict, graficos_quant: dict, graficos_fund: dict,

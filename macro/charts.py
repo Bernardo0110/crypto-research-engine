@@ -1,19 +1,18 @@
+import io
+import base64
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from pathlib import Path
 from config.settings import CORES
 
-PASTA_SAIDA = Path("outputs/charts")
-PASTA_SAIDA.mkdir(parents=True, exist_ok=True)
 
-
-def _salvar(fig: plt.Figure, nome: str) -> Path:
-    caminho = PASTA_SAIDA / nome
-    fig.savefig(caminho, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
+def _salvar(fig: plt.Figure) -> str:
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
-    return caminho
+    buf.seek(0)
+    return "data:image/png;base64," + base64.b64encode(buf.read()).decode()
 
 
 def _estilo_base(fig: plt.Figure, ax: plt.Axes) -> None:
@@ -30,7 +29,7 @@ def _estilo_base(fig: plt.Figure, ax: plt.Axes) -> None:
     ax.grid(True, color=grade, linewidth=0.5, alpha=0.7)
 
 
-def grafico_fear_greed_gauge(valor: float, label: str, coin_id: str) -> Path | None:
+def grafico_fear_greed_gauge(valor: float, label: str, coin_id: str) -> str | None:
     """Gauge semicircular do Fear & Greed Index."""
     if np.isnan(valor):
         return None
@@ -77,10 +76,10 @@ def grafico_fear_greed_gauge(valor: float, label: str, coin_id: str) -> Path | N
     ax.set_xlim(-1.2, 1.2)
     ax.set_ylim(-0.6, 1.1)
 
-    return _salvar(fig, f"{coin_id}_fear_greed.png")
+    return _salvar(fig)
 
 
-def grafico_halving_ciclo(macro: dict, coin_id: str) -> Path | None:
+def grafico_halving_ciclo(macro: dict, coin_id: str) -> str | None:
     """Barra de progresso do ciclo de halving."""
     pct = macro.get("pct_ciclo_completo", np.nan)
     fase = macro.get("fase_ciclo", "desconhecida")
@@ -117,10 +116,10 @@ def grafico_halving_ciclo(macro: dict, coin_id: str) -> Path | None:
     ax.set_xlim(0, 100)
     ax.set_ylim(-0.5, 0.7)
 
-    return _salvar(fig, f"{coin_id}_halving_ciclo.png")
+    return _salvar(fig)
 
 
-def grafico_scores_macro(scores_macro: dict, nome: str, coin_id: str) -> Path | None:
+def grafico_scores_macro(scores_macro: dict, nome: str, coin_id: str) -> str | None:
     """Barras horizontais dos scores das variáveis macro."""
     mapa = {
         "score_fear_greed":    "Fear & Greed",
@@ -161,11 +160,11 @@ def grafico_scores_macro(scores_macro: dict, nome: str, coin_id: str) -> Path | 
         ax.text(v + 0.15, i, f"{v:.1f}", va="center",
                 color=CORES.get("texto", "#E6EDF3"), fontsize=9)
 
-    return _salvar(fig, f"{coin_id}_scores_macro.png")
+    return _salvar(fig)
 
 
 def gerar_todos(macro: dict, scores_macro: dict,
-                nome: str, coin_id: str) -> dict[str, Path]:
+                nome: str, coin_id: str) -> dict[str, str | None]:
     """Gera todos os gráficos macro."""
     return {
         "fear_greed":   grafico_fear_greed_gauge(

@@ -71,9 +71,19 @@ narrative/
 pdf/
   renderer_html.py  Jinja2 → HTML → Playwright → PDF
 
-main.py           orquestra todo o pipeline
-outputs/pdfs/     PDFs gerados
-notebooks/        features em desenvolvimento (Colab)
+tools/
+  proximo_coin.py   rotação de coins para sessão de melhorias
+  avaliar.py        avalia o PDF mais recente com Gemini
+  limpar_sessao.py  remove artefatos intermediários da sessão
+
+prompts/
+  avaliar_relatorio.md   prompt para avaliação do PDF pelo Gemini
+  triagem_avaliacao.md   guia de triagem dos itens de avaliação
+
+main.py               orquestra todo o pipeline
+outputs/pdfs/         PDFs gerados
+outputs/avaliacoes/   avaliações geradas por tools/avaliar.py
+notebooks/            features em desenvolvimento (Colab)
 ```
 
 ---
@@ -167,6 +177,71 @@ O projeto foi desenhado para analisar **qualquer crypto**, assumindo graciosamen
 - Pilar sem dados suficientes → excluído do score com aviso
 - Pesos redistribuídos automaticamente entre componentes disponíveis
 - PDF gerado mesmo com análise parcial — seções sem dados exibem aviso explicativo
+
+---
+
+## Sessão de Melhorias — Protocolo Autônomo
+
+Quando o usuário disser "sessão de melhorias", "roda melhorias", "melhoria automática" ou similar, executar o protocolo abaixo **sem pedir confirmação a cada passo**.
+
+### Mentalidade: Dev Sênior + Dono do Projeto
+
+Atuar não apenas como executor de tarefas, mas como **responsável geral pelo projeto**. Dois filtros obrigatórios antes de qualquer implementação:
+
+1. **Faz sentido no contexto global?** Avaliar coerência arquitetural, consistência com o design existente e impacto em outros módulos. Uma correção que introduz padrão inconsistente não é correção — é dívida técnica nova.
+
+2. **É muito profunda para ser feita autonomamente?** Se a mudança exige reestruturação de módulos, alteração de contratos de função ou impacta múltiplas partes do pipeline — **mesmo que seja Bucket A** — não implementar. Anotar no relatório final da sessão para o usuário avaliar.
+
+Manter o projeto organizado é critério de aceitação tão importante quanto corrigir o bug.
+
+### Fluxo por rodada
+
+```
+1. Obter próximo coin da rotação
+   python tools/proximo_coin.py
+   → retorna o coin ID do ciclo (ex: ethereum)
+   → lista completa e ordem definidas em config/mappings.py (COINS_ROTACAO)
+   → estado persistido em outputs/avaliacoes/.rotacao.txt
+
+2. Gerar PDF para esse coin
+   python main.py <COIN_ID>
+
+3. Rodar avaliador
+   python tools/avaliar.py
+   → salva em outputs/avaliacoes/
+
+4. Ler avaliação + triar (seguir prompts/triagem_avaliacao.md)
+   → verificar se prompts/avaliar_relatorio.md precisa de ajuste
+
+5. Implementar
+   Bucket A (erros reais)     → todos, nesta rodada
+   Bucket B (artefatos)       → documentar, não mexer no código
+   Bucket C (UX/visual)       → implementar se custo < 30min
+   Bucket D-fácil (features)  → implementar se viável com fontes atuais
+   Bucket D-profundo           → adicionar a outputs/backlog_melhorias.md
+
+6. Repetir a partir do passo 1 com o próximo coin da rotação
+```
+
+### Critério de parada
+
+Encerrar quando **todas** as condições forem verdadeiras:
+- Nenhum item Bucket A na última avaliação
+- Menos de 3 itens acionáveis na última rodada
+
+### Ao encerrar
+
+1. **Limpar artefatos intermediários:**
+   ```
+   python tools/limpar_sessao.py
+   ```
+   Remove os PDFs gerados e as avaliações individuais. Preserva `backlog_melhorias.md`, `.rotacao.txt` e todas as alterações de código.
+
+2. **Apresentar ao usuário:**
+   - Resumo das rodadas (o que mudou em cada uma)
+   - Limitações conhecidas (Bucket B) identificadas na sessão
+   - **Alterações escaladas** — itens identificados mas não implementados por serem profundos demais, com justificativa para cada um
+   - Backlog atualizado (`outputs/backlog_melhorias.md`)
 
 ---
 

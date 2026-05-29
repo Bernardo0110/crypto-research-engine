@@ -61,6 +61,18 @@ CATEGORY_PEERS: dict[str, list[str]] = {
     ],
 }
 
+# Coins usados na rotação automática da sessão de melhorias — um por categoria
+COINS_ROTACAO: list[str] = [
+    "bitcoin",          # layer-1 (store of value)
+    "ethereum",         # layer-1 (smart contract platform)
+    "solana",           # layer-1 (high performance)
+    "matic-network",    # layer-2
+    "uniswap",          # DeFi / DEX
+    "aave",             # lending
+    "lido-dao",         # liquid staking
+    "axie-infinity",    # gaming / NFT
+]
+
 # Mapeamento categoria CoinGecko → chave interna
 CATEGORY_TO_KEY: dict[str, str] = {
     "layer-1":                      "layer1",

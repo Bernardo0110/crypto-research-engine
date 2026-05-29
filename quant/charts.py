@@ -1,21 +1,19 @@
+import io
+import base64
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
-from pathlib import Path
 from config.settings import CORES, ATIVO
 
 
-PASTA_SAIDA = Path("outputs/charts")
-PASTA_SAIDA.mkdir(parents=True, exist_ok=True)
-
-
-def _salvar(fig: plt.Figure, nome: str) -> Path:
-    caminho = PASTA_SAIDA / nome
-    fig.savefig(caminho, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
+def _salvar(fig: plt.Figure) -> str:
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
-    return caminho
+    buf.seek(0)
+    return "data:image/png;base64," + base64.b64encode(buf.read()).decode()
 
 
 def _estilo_base(fig: plt.Figure, ax: plt.Axes) -> None:
@@ -34,7 +32,7 @@ def _estilo_base(fig: plt.Figure, ax: plt.Axes) -> None:
 
 
 def grafico_preco_historico(historico: pd.Series, nome: str,
-                             simbolo: str, coin_id: str) -> Path:
+                             simbolo: str, coin_id: str) -> str:
     """Linha de preço USD com área sombreada abaixo da curva."""
     fig, ax = plt.subplots(figsize=(11, 4))
     _estilo_base(fig, ax)
@@ -49,10 +47,10 @@ def grafico_preco_historico(historico: pd.Series, nome: str,
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
     plt.xticks(rotation=30)
 
-    return _salvar(fig, f"{coin_id}_preco_historico.png")
+    return _salvar(fig)
 
 
-def grafico_drawdown(historico: pd.Series, nome: str, coin_id: str) -> Path:
+def grafico_drawdown(historico: pd.Series, nome: str, coin_id: str) -> str:
     """Drawdown ao longo do tempo (área vermelha)."""
     pico = historico.cummax()
     drawdown = (historico - pico) / pico
@@ -70,15 +68,14 @@ def grafico_drawdown(historico: pd.Series, nome: str, coin_id: str) -> Path:
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
     plt.xticks(rotation=30)
 
-    return _salvar(fig, f"{coin_id}_drawdown.png")
+    return _salvar(fig)
 
 
 def grafico_retornos_acumulados(historico_ativo: pd.Series,
                                  historico_bench: pd.Series,
                                  nome: str, simbolo: str,
-                                 nome_bench: str, coin_id: str) -> Path:
+                                 nome_bench: str, coin_id: str) -> str:
     """Retornos acumulados do ativo vs benchmark (base 100)."""
-    # Alinha os dois históricos ao período em comum
     df = pd.concat([historico_ativo, historico_bench], axis=1).dropna()
     df.columns = [simbolo, nome_bench]
     base = df.iloc[0]
@@ -102,11 +99,11 @@ def grafico_retornos_acumulados(historico_ativo: pd.Series,
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
     plt.xticks(rotation=30)
 
-    return _salvar(fig, f"{coin_id}_retornos_acumulados.png")
+    return _salvar(fig)
 
 
 def grafico_distribuicao_retornos(historico: pd.Series, nome: str,
-                                   coin_id: str) -> Path:
+                                   coin_id: str) -> str:
     """Histograma + KDE dos retornos diários."""
     retornos = historico.pct_change().dropna() * 100
 
@@ -128,10 +125,10 @@ def grafico_distribuicao_retornos(historico: pd.Series, nome: str,
     ax.legend(facecolor=CORES.get("fundo", "#0D1117"),
               labelcolor=CORES.get("texto", "#E6EDF3"), fontsize=9)
 
-    return _salvar(fig, f"{coin_id}_distribuicao_retornos.png")
+    return _salvar(fig)
 
 
-def grafico_radar_scores(scores: dict, nome: str, coin_id: str) -> Path:
+def grafico_radar_scores(scores: dict, nome: str, coin_id: str) -> str | None:
     """Radar chart dos scores quant individuais (0–10)."""
     labels_map = {
         "score_sharpe":       "Sharpe",
@@ -147,7 +144,7 @@ def grafico_radar_scores(scores: dict, nome: str, coin_id: str) -> Path:
     valores = [scores[k] for k in chaves]
 
     if len(chaves) < 3:
-        return None  # radar sem dados suficientes
+        return None
 
     N = len(labels)
     angulos = [n / N * 2 * np.pi for n in range(N)]
@@ -173,13 +170,13 @@ def grafico_radar_scores(scores: dict, nome: str, coin_id: str) -> Path:
     ax.set_yticklabels(["2.5", "5", "7.5", "10"], color=texto, fontsize=7)
     ax.set_title(f"{nome} — Scores Quant", color=texto, fontsize=12, pad=15)
 
-    return _salvar(fig, f"{coin_id}_radar_quant.png")
+    return _salvar(fig)
 
 
 def gerar_todos(historico_ativo: pd.Series, historico_bench: pd.Series,
                 scores: dict, nome: str, simbolo: str,
-                nome_bench: str, coin_id: str) -> dict[str, Path]:
-    """Gera todos os gráficos quant e retorna dict {nome: caminho}."""
+                nome_bench: str, coin_id: str) -> dict[str, str | None]:
+    """Gera todos os gráficos quant e retorna dict {nome: base64}."""
     return {
         "preco_historico":      grafico_preco_historico(historico_ativo, nome, simbolo, coin_id),
         "drawdown":             grafico_drawdown(historico_ativo, nome, coin_id),
